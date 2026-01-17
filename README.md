@@ -49,7 +49,7 @@ onnx-community/whisper-large-v3-turbo
 ```
 `parakeet-v3` и `canary-1b-v2` поддерживают следующие языки: `"bg", "hr", "cs", "da", "nl", "en", "et", "fi", "fr", "de", "el", "hu", "it", "lv", "lt", "mt", "pl", "pt", "ro", "sk", "sl", "es", "sv", "ru", "uk"`
 
-Пример compose.yaml:
+Пример для Docker compose.yaml файла:
 ```
 services:
   whisper:
