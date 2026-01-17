@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/romlisrl/wyoming-onnx-asr-ha/issues"
   },
-  "homepage": "https://github.com/romlisrl/wyoming-onnx-asr-ha#readme"
+  "homepage": "https://github.com/romlisrl/wyoming-onnx-asr-ha#readme",
+  "publishConfig": {
+    "romlisrl:registry"=: "https://npm.pkg.github.com"
+  }
 }
