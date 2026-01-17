@@ -1,0 +1,19 @@
+{
+  "name": "wyoming-onnx-asr-ha",
+  "version": "1.0.0",
+  "description": "Wyoming protocol for Home Assistant on ONNX-ASR",
+  "main": "\"python3\", \"-m\", \"wyoming_onnxasr\"",
+  "scripts": {
+    "test": "exit 0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/romlisrl/wyoming-onnx-asr-ha.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/romlisrl/wyoming-onnx-asr-ha/issues"
+  },
+  "homepage": "https://github.com/romlisrl/wyoming-onnx-asr-ha#readme"
+}
