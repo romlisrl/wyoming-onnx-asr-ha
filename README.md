@@ -1,3 +1,4 @@
+[![Buy Me a Coffee](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://buymeacoffee.com/romlis)
 ## Wyoming ONNX ASR for Home Assistant on [ONNX ASR](https://github.com/istupakov/onnx-asr)
 ### STT (Speech-to-Text) service for Home Assistant using ONNX ASR models
 This project provides a Wyoming protocol-compatible Automatic Speech Recognition (ASR) server powered by ONNX models. It is designed to be used with voice integrations such as Home Assistant’s Wyoming ecosystem, enabling local speech-to-text processing without relying on external APIs.
