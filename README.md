@@ -1,66 +1,66 @@
-## Wyoming STT сервер для Home Assistant на базе [ONNX ASR](https://github.com/istupakov/onnx-asr)
-### Нацелен на русскоговорящую аудиторию, из всего многообразия моделей интересны только некоторые
-For English-speaking users, the Parakeet models (e.g., `nemo-parakeet-ctc-0.6b`, `nemo-parakeet-rnnt-0.6b`, `nemo-parakeet-tdt-0.6b-v2`) are recommended.
+## Wyoming ONNX ASR for Home Assistant [ONNX ASR](https://github.com/istupakov/onnx-asr)
+### STT (Speech-to-Text) service for Home Assistant using ONNX ASR models
+This project provides a Wyoming protocol-compatible Automatic Speech Recognition (ASR) server powered by ONNX models. It is designed to be used with voice integrations such as Home Assistant’s Wyoming ecosystem, enabling local speech-to-text processing without relying on external APIs.
 
-```
-# В простом случае достаточно установить зависимости, скачать каталог с сервером и запустить его
-# Детали смотрите в репозитории OnnxAsr
-pip install onnx-asr[cpu,hub] wyoming
+### 🚀 Features
 
-# Пример для win с кастомным портом и облегченной версией модели (int8)
-python -m wyoming_onnxasr --model gigaam-v2-ctc --uri 'tcp://0.0.0.0:10305' --quantization int8
+- 🧠 Automatic Speech Recognition (ASR) server for Wyoming-compatible voice systems
+- 🗣️ Supports a variety of ONNX models (e.g., Parakeet, GigaAM, Whisper, etc.)
+- ⚡ Includes optimized pipelines for CPU or GPU inference
+- 📦 Can be run standalone or inside Docker
+- 🏡 Integrates with Home Assistant Voice Assistants via the Wyoming protocol
 
-# Если установлен onnxruntime-gpu, то используйте --device cuda
-pip install onnxruntime-gpu
-```
-В linux, как водится, все операции выполняйте в виртуальной среде вручную. Или воспользуйтесь скриптами
-```
-git clone https://github.com/mitrokun/wyoming_stt_onnxasr.git
-cd wyoming_stt_onnxasr
-script/setup
-# script/run запустит сервер с параметрами из примера выше, но с полной моделью, используйте ключи для конфигурации
-# можно доустановить библиотеку для cuda
-~/wyoming_stt_onnxasr/.venv/bin/pip install onnxruntime-gpu
-```
+### 🐳 Using Docker
 
-### Доступные модели:
-```
-gigaam-v2-ctc
-gigaam-v2-rnnt
-gigaam-v3-ctc                 # теперь это база, int8 - 220 мб, full - 865мб
-gigaam-v3-rnnt
-gigaam-v3-e2e-ctc             # e2e модели с пунктуацией
-gigaam-v3-e2e-rnnt
-alphacep/vosk-model-ru        # int8 - 70мб, full - 260мб, ещё быстрее но WER хуже
-alphacep/vosk-model-small-ru  # 25мб/90мб, в аддоне HA исользуется v0.22, здесь v0.54
-nemo-fastconformer-ru-ctc
-nemo-fastconformer-ru-rnnt
-nemo-parakeet-ctc-0.6b        # eng / int8 - 620мб
-nemo-parakeet-rnnt-0.6b       # eng
-nemo-parakeet-tdt-0.6b-v2     # eng
-nemo-parakeet-tdt-0.6b-v3     # multilingual / may work inconsistently, as automatic language detection is used for each request
-nemo-canary-1b-v2             # multilingual / int8 - 980мб; The transcription language is matched with the agent language.
-
-whisper-base                  # комплектные варианты шёпота не интересны, так как есть faster-whisper
-onnx-community/whisper-tiny
-onnx-community/whisper-base
-onnx-community/whisper-small
-onnx-community/whisper-large-v3-turbo
-```
-`parakeet-v3` и `canary-1b-v2` поддерживают следующие языки: `"bg", "hr", "cs", "da", "nl", "en", "et", "fi", "fr", "de", "el", "hu", "it", "lv", "lt", "mt", "pl", "pt", "ro", "sk", "sl", "es", "sv", "ru", "uk"`
-
-Пример для Docker compose.yaml файла:
+A compose.yaml is included for easy container deployment:
 ```
 services:
-  whisper:
+  asr:
     image: ghcr.io/romlisrl/wyoming-onnx-asr-ha:latest
-    container_name: whisper
+    container_name: wyoming-onnx-asr
     restart: unless-stopped
     ports:
       - 10305:10305
     command: --model gigaam-v3-ctc --uri tcp://0.0.0.0:10305 --quantization int8 --debug
     volumes:
-      - .local/data:/data
+      - ./data:/data
     environment:
       - HF_HOME=/data
 ```
+### 🧩 Recommended Models
+Different ONNX models are supported. Examples:
+
+Model	Description
+
+`gigaam-v3-ctc`	Efficient and accurate English/Russian ASR
+
+`nemo-parakeet-tdt-0.6b`	Nvidia Parakeet TDT English
+
+`onnx-community/whisper-bas`e	Whisper baseline model
+
+Model choice affects latency and accuracy. Larger models require more memory.
+
+### 🛠️ Configuration Options
+You can fine-tune:
+
+URI: network address to serve (e.g., tcp://0.0.0.0:xxxx)
+
+Quantization: reduce model size/speed trade-off
+
+Device: CPU or CUDA GPU
+
+Debug logging: for troubleshooting
+
+### 📦 Docker / Deployment Notes
+The included compose.yaml can be customized with environment variables, mount points, and model paths.
+Be sure to expose ports correctly for Home Assistant’s Wyoming integration.
+
+### ❓ Integration with Home Assistant
+Once the server runs and listening:
+
+Add Wyoming Protocol integration in Home Assistant
+Provide the server URI (e.g., host:10305)
+Home Assistant will send audio and receive text responses
+
+### 🙏 Credits & License
+Forked from mitrokun/wyoming_stt_onnxasr and adapted for broader usage.
