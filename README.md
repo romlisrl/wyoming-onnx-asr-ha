@@ -36,7 +36,7 @@ Model	Description
 
 `nemo-parakeet-tdt-0.6b`	Nvidia Parakeet TDT English
 
-`onnx-community/whisper-bas`e	Whisper baseline model
+`onnx-community/whisper-base`	Whisper baseline model
 
 Model choice affects latency and accuracy. Larger models require more memory.
 
