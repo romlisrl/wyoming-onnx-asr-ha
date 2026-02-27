@@ -36,8 +36,12 @@ class OnnxAsrEventHandler(AsyncEventHandler):
         self.sample_rate = 16000
         self.sample_width = 2
         self.channels = 1
+        self._is_finished = False  # Флаг для блокировки лишних данных после завершения транскрипции
 
     async def handle_event(self, event: Event) -> bool:
+        if self._is_finished:
+            return False  # Сразу рвем связь, если что-то прилетело после завершения транскрипции
+        
         if AudioStart.is_type(event.type):
             audio_start = AudioStart.from_event(event)
             self.sample_rate = audio_start.rate
@@ -48,21 +52,27 @@ class OnnxAsrEventHandler(AsyncEventHandler):
             return True
 
         if AudioChunk.is_type(event.type):
+            # Если буфера нет (прилетел мусор до старта) — игнорируем
+            if self.audio_buffer is None:
+                return True
+            
             chunk = AudioChunk.from_event(event)
 
-            if self.audio_buffer is None:
-                self.audio_buffer = bytearray()
+#            if self.audio_buffer is None:
+#                self.audio_buffer = bytearray()
 
             self.audio_buffer.extend(chunk.audio)
             return True
 
         if AudioStop.is_type(event.type):
+            self._is_finished = True  # МГНОВЕННО блокируем прием новых данных
+
             _LOGGER.debug("Audio stopped. Transcribing...")
             assert self.audio_buffer is not None
 
             if not self.audio_buffer:
                  await self.write_event(Transcript(text="").event())
-                 return True
+                 return False # Если буфер пустой или None — закрываем сессию
 
             audio_s16 = np.frombuffer(self.audio_buffer, dtype=np.int16)
             audio_f32 = audio_s16.astype(np.float32) / 32768.0
@@ -81,9 +91,9 @@ class OnnxAsrEventHandler(AsyncEventHandler):
             _LOGGER.debug(f"Transcription: {transcription}")
 
             await self.write_event(Transcript(text=transcription).event())
-            _LOGGER.debug("Completed request")
+            _LOGGER.debug("Completed request") # Отправляем результат в HA и логируем завершение транскрипции
 
-            return True
+            return False # Закрываем Wyoming-соединение
 
         if Transcribe.is_type(event.type):
             transcribe = Transcribe.from_event(event)
